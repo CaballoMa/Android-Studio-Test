@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">todoApp</string>
+    <string name="type_image">type_image</string>
+    <string name="Suggest">Suggest</string>
+</resources>
