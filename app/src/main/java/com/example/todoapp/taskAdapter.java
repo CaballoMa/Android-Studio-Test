@@ -54,6 +54,7 @@ public class taskAdapter extends RecyclerView.Adapter<taskAdapter.ViewHolder>{
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 db.delete("TaskData","Task=?",new String[] {text});
                 db.close();
+                notifyItemRemoved(position);
             }
         });
 
