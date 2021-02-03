@@ -3,6 +3,7 @@ package com.example.todoapp;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,7 +30,6 @@ public class taskAdapter extends RecyclerView.Adapter<taskAdapter.ViewHolder>{
             super(view);
             taskView=view;
             task = (TextView) view.findViewById(R.id.task_info);
-
         }
     }
 
@@ -44,6 +45,7 @@ public class taskAdapter extends RecyclerView.Adapter<taskAdapter.ViewHolder>{
 
         final Button imp_button = view.findViewById(R.id.imp);
         final Button dele_button = view.findViewById(R.id.dele);
+
         dele_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,19 +57,31 @@ public class taskAdapter extends RecyclerView.Adapter<taskAdapter.ViewHolder>{
                 db.delete("TaskData","Task=?",new String[] {text});
                 db.close();
                 notifyItemRemoved(position);
+                mtaskList.remove(task);
             }
         });
 
         imp_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position = holder.getAdapterPosition();
-                Task task = mtaskList.get(position);
-                imp_button.setBackgroundColor(view.getContext().getResources().getColor(R.color.purple_200));
                 MyDatabaseHelper dbHelper= new MyDatabaseHelper(view.getContext(),"TaskStore.db",null,1);;
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
+                int position = holder.getAdapterPosition();
+                Task task = mtaskList.get(position);
+
+                Cursor cursor = db.query("TaskData", new String[]{"myDay, Important, Dated, Task"}, "Task=?", new String[]{task.getText()}, null, null, null);
+                cursor.moveToFirst();
+                Boolean imp = cursor.getInt(cursor.getColumnIndex("Important"))>0;
                 ContentValues values = new ContentValues();
+
+                if(!imp){
+                imp_button.setBackgroundColor(view.getContext().getResources().getColor(R.color.purple_200));
                 values.put("Important",Boolean.TRUE);
+                }
+                else {
+                    values.put("Important",Boolean.FALSE);
+                    imp_button.setBackgroundColor(view.getContext().getResources().getColor(R.color.teal_200));
+                }
                 String text=task.getText();
                 db.update("TaskData",values,"Task=?",new String[] {text});
                 db.close();

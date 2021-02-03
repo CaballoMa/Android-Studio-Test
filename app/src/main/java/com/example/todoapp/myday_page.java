@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -27,7 +28,6 @@ public class myday_page extends AppCompatActivity {
     taskAdapter adapter= new taskAdapter(TaskList);;
     RecyclerView recyclerView;
 
-    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,11 +40,10 @@ public class myday_page extends AppCompatActivity {
                 String tasks = cursor.getString(cursor.getColumnIndex("Task"));
                 Task task = new Task(tasks);
                 Boolean myDay=cursor.getInt(cursor.getColumnIndex("myDay"))>0;
-                Boolean imp = cursor.getInt(cursor.getColumnIndex("Important"))>0;
                 if (!TaskList.contains(task)&&myDay) {
                     TaskList.add(task);
-
                 }
+
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -98,39 +97,14 @@ public class myday_page extends AppCompatActivity {
         if (requestCode == LAUNCH_SECOND_ACTIVITY) {
             if(resultCode == Activity.RESULT_OK){
                 String input=data.getStringExtra("input");
+                Task task=new Task(input);
                 ContentValues values = new ContentValues();
                 values.put("myDay",Boolean.TRUE);
                 values.put("Important",Boolean.FALSE);
                 values.put("Dated",Boolean.TRUE);
                 values.put("Task",input);
                 db.insert("TaskData",null,values);
-
-                List<Task> compare = new ArrayList<Task>();
-                Cursor cursor = db.query("TaskData", null, null, null, null, null, null);
-                if (cursor.moveToFirst()) {
-                    do {
-                        String tasks = cursor.getString(cursor.getColumnIndex("Task"));
-                        Task task = new Task(tasks);
-                        Boolean myDay=cursor.getInt(cursor.getColumnIndex("myDay"))>0;
-                        Boolean imp = cursor.getInt(cursor.getColumnIndex("Important"))>0;
-                        if (!compare.contains(task)&&myDay) {
-                            compare.add(task);
-                            TaskList.add(task);
-                        }
-                    } while (cursor.moveToNext());
-                }
-                cursor.close();
-
-                db.close();
-
-                int size=TaskList.size();
-                for(int i=0;i<size;i++){
-                    Task task=TaskList.get(i);
-                    if(compare.contains(task)){
-                        TaskList.remove(task);
-                        size--;
-                    }
-                }
+                TaskList.add(task);
 
                 Toast.makeText(this,"input done!",Toast.LENGTH_SHORT).show();
                 adapter.notifyItemInserted(TaskList.size());
