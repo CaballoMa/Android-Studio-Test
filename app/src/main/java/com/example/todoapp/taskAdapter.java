@@ -45,6 +45,7 @@ public class taskAdapter extends RecyclerView.Adapter<taskAdapter.ViewHolder>{
 
         final Button imp_button = view.findViewById(R.id.imp);
         final Button dele_button = view.findViewById(R.id.dele);
+        final Button edit_button = view.findViewById(R.id.edit);
 
         dele_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,6 +56,7 @@ public class taskAdapter extends RecyclerView.Adapter<taskAdapter.ViewHolder>{
                 MyDatabaseHelper dbHelper= new MyDatabaseHelper(view.getContext(),"TaskStore.db",null,1);;
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 db.delete("TaskData","Task=?",new String[] {text});
+                Toast.makeText(view.getContext(),text,Toast.LENGTH_SHORT).show();
                 db.close();
                 notifyItemRemoved(position);
                 mtaskList.remove(task);
@@ -68,23 +70,38 @@ public class taskAdapter extends RecyclerView.Adapter<taskAdapter.ViewHolder>{
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 int position = holder.getAdapterPosition();
                 Task task = mtaskList.get(position);
-
-                Cursor cursor = db.query("TaskData", new String[]{"myDay, Important, Dated, Task"}, "Task=?", new String[]{task.getText()}, null, null, null);
+                Cursor cursor = db.query("TaskData", new String[]{"Type , Important, Dated, Task"}, "Task=?", new String[]{task.getText()}, null, null, null);
                 cursor.moveToFirst();
                 Boolean imp = cursor.getInt(cursor.getColumnIndex("Important"))>0;
                 ContentValues values = new ContentValues();
 
                 if(!imp){
-                imp_button.setBackgroundColor(view.getContext().getResources().getColor(R.color.purple_200));
-                values.put("Important",Boolean.TRUE);
+                    //imp_button.setBackgroundColor(view.getContext().getResources().getColor(R.color.purple_200));
+                    values.put("Important",Boolean.TRUE);
                 }
                 else {
+                    //imp_button.setBackgroundColor(view.getContext().getResources().getColor(R.color.teal_200));
                     values.put("Important",Boolean.FALSE);
-                    imp_button.setBackgroundColor(view.getContext().getResources().getColor(R.color.teal_200));
                 }
                 String text=task.getText();
                 db.update("TaskData",values,"Task=?",new String[] {text});
                 db.close();
+            }
+        });
+
+        edit_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = holder.getAdapterPosition();
+                Task task = mtaskList.get(position);
+                String text=task.getText();
+                notifyItemRemoved(position);
+                mtaskList.remove(task);
+
+                Intent intent=new Intent();
+                intent.setClass(view.getContext(),edit_msg.class);
+                intent.putExtra("extra data",text);
+                startActivity(view.getContext(),intent,null);
             }
         });
 
@@ -95,6 +112,11 @@ public class taskAdapter extends RecyclerView.Adapter<taskAdapter.ViewHolder>{
     public void onBindViewHolder(ViewHolder holder, int position) {
         Task task = mtaskList.get(position);
         holder.task.setText(task.getText());
+    }
+
+    @Override
+    public long getItemId(int position){
+        return position;
     }
 
     @Override

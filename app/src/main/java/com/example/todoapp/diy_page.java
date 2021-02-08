@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -20,32 +19,36 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class imp_page extends AppCompatActivity {
+public class diy_page extends AppCompatActivity {
+
     private MyDatabaseHelper dbHelper= new MyDatabaseHelper(this,"TaskStore.db",null,1);;
     private List<Task> TaskList = new ArrayList<Task>();
-    private String title = "重要";
+    private String[] title={""};
     int LAUNCH_SECOND_ACTIVITY = 1;
     taskAdapter adapter;
     RecyclerView recyclerView;
 
-    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_imp_page);
+        setContentView(R.layout.activity_diy_page);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
+        Intent getItent = getIntent();
+        title[0] = getItent.getStringExtra("diy");
+
         TextView textView = findViewById(R.id.title_text);
-        textView.setText(title);
+        textView.setText(title[0]);
 
         Cursor cursor = db.query("TaskData", null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
                 String tasks = cursor.getString(cursor.getColumnIndex("Task"));
                 Task task = new Task(tasks);
-                Boolean imp = cursor.getInt(cursor.getColumnIndex("Important"))>0;
-                if (imp==Boolean.TRUE) {
+                String type=cursor.getString(cursor.getColumnIndex("Type"));
+                if (type.equals(title[0])) {
                     TaskList.add(task);
+                    Toast.makeText(diy_page.this,tasks,Toast.LENGTH_SHORT).show();
                 }
             } while (cursor.moveToNext());
         }
@@ -73,7 +76,7 @@ public class imp_page extends AppCompatActivity {
             public void onClick(View v) {
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                String shareText=title;
+                String shareText=title[0];
                 for(int i=0;i<TaskList.size();i++){
                     shareText+="\n"+TaskList.get(i).getText();
                 }
@@ -88,7 +91,7 @@ public class imp_page extends AppCompatActivity {
             public void onClick(View v) {
                 //((Activity)getBaseContext()).finish();
                 Intent intent=new Intent();
-                intent.setClass(imp_page.this,MainActivity.class);
+                intent.setClass(diy_page.this,MainActivity.class);
                 startActivity(intent);
 
             }
@@ -98,7 +101,7 @@ public class imp_page extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent();
-                intent.setClass(imp_page.this,edit_msg.class);
+                intent.setClass(diy_page.this,edit_msg.class);
                 intent.putExtra("extra data","add");
                 startActivityForResult(intent, LAUNCH_SECOND_ACTIVITY);
             }
@@ -118,8 +121,8 @@ public class imp_page extends AppCompatActivity {
                 String input=data.getStringExtra("input");
                 String date = data.getStringExtra("Date");
                 ContentValues values = new ContentValues();
-                values.put("Type","Important");
-                values.put("Important",Boolean.TRUE);
+                values.put("Type",title[0]);
+                values.put("Important",Boolean.FALSE);
                 values.put("Dated",date);
                 Task task;
                 if(date.equals("")){
@@ -145,7 +148,6 @@ public class imp_page extends AppCompatActivity {
         db.close();
     }//onActivityResult
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -160,8 +162,8 @@ public class imp_page extends AppCompatActivity {
             do {
                 String tasks = cursor.getString(cursor.getColumnIndex("Task"));
                 Task task = new Task(tasks);
-                Boolean imp = cursor.getInt(cursor.getColumnIndex("Important"))>0;
-                if (!list.contains(tasks) && imp==Boolean.TRUE) {
+                String type=cursor.getString(cursor.getColumnIndex("Type"));
+                if (!list.contains(tasks)&&type.equals(title[0])) {
                     TaskList.add(task);
                 }
 

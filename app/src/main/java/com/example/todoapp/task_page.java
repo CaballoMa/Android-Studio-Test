@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -14,6 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -22,6 +22,7 @@ import java.util.List;
 public class task_page extends AppCompatActivity {
     private MyDatabaseHelper dbHelper= new MyDatabaseHelper(this,"TaskStore.db",null,1);;
     private List<Task> TaskList = new ArrayList<Task>();
+    private String title="Tasks";
     int LAUNCH_SECOND_ACTIVITY = 1;
     taskAdapter adapter;
     RecyclerView recyclerView;
@@ -29,17 +30,18 @@ public class task_page extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mydaypage);
+        setContentView(R.layout.activity_task_page);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        TextView textView = findViewById(R.id.title_text);
+        textView.setText(title);
 
         Cursor cursor = db.query("TaskData", null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
                 String tasks = cursor.getString(cursor.getColumnIndex("Task"));
                 Task task = new Task(tasks);
-                if (!TaskList.contains(task)) {
-                    TaskList.add(task);
-                }
+                TaskList.add(task);
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -58,7 +60,23 @@ public class task_page extends AppCompatActivity {
         }
 
         Button back_button=(Button) findViewById(R.id.title_back);
-        Button edit_button=(Button) findViewById(R.id.title_edit);
+        Button edit_button=(Button) findViewById(R.id.main_add);
+        Button share_button=(Button) findViewById(R.id.title_share);
+
+        share_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                String shareText=title;
+                for(int i=0;i<TaskList.size();i++){
+                    shareText+="\n"+TaskList.get(i).getText();
+                }
+                shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+                shareIntent.setType("text/plain");
+                startActivity(shareIntent);
+            }
+        });
 
         back_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,6 +94,7 @@ public class task_page extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent=new Intent();
                 intent.setClass(task_page.this,edit_msg.class);
+                intent.putExtra("extra data","add");
                 startActivityForResult(intent, LAUNCH_SECOND_ACTIVITY);
             }
 
@@ -92,13 +111,21 @@ public class task_page extends AppCompatActivity {
         if (requestCode == LAUNCH_SECOND_ACTIVITY) {
             if(resultCode == Activity.RESULT_OK){
                 String input=data.getStringExtra("input");
+                String date = data.getStringExtra("Date");
                 ContentValues values = new ContentValues();
-                values.put("myDay",Boolean.FALSE);
+                values.put("Type","Tasks");
                 values.put("Important",Boolean.FALSE);
-                values.put("Dated",Boolean.FALSE);
-                values.put("Task",input);
+                values.put("Dated",date);
+                Task task;
+                if(date.equals("")){
+                    task = new Task(input);
+                    values.put("Task",input);
+                }
+                else {
+                    task = new Task(input + "(" + date + ")");
+                    values.put("Task",input+"("+date+")");
+                }
                 db.insert("TaskData",null,values);
-                Task task = new Task(input);
                 TaskList.add(task);
 
                 db.close();
@@ -114,8 +141,28 @@ public class task_page extends AppCompatActivity {
     }//onActivityResult
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        List<String> list = new ArrayList<String >();
+        for(int i=0;i<TaskList.size();i++){
+            list.add(TaskList.get(i).getText());
+        }
 
+        Cursor cursor = db.query("TaskData", null, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                String tasks = cursor.getString(cursor.getColumnIndex("Task"));
+                Task task = new Task(tasks);
+                if (!list.contains(tasks)) {
+                    TaskList.add(task);
+                }
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        adapter.notifyItemInserted(TaskList.size());
+        recyclerView.setAdapter(adapter);
+        db.close();
     }
 }

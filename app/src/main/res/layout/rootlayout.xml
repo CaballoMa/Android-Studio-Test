@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/title_bg"
     android:orientation="vertical">
 
     <LinearLayout
@@ -22,8 +21,8 @@
 
         <TextView
             android:id="@+id/title_text"
-            android:layout_width="301dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_gravity="center|top"
             android:layout_weight="1"
             android:gravity="center"
@@ -31,22 +30,33 @@
             android:textColor="#fff"
             android:textSize="24sp" />
 
+        <Button
+            android:id="@+id/title_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|top|right"
+            android:layout_margin="5dp"
+            android:text="share"
+            android:background="@drawable/edit_bg"
+            android:textColor="#fff"/>
+
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="453dp"
+        android:layout_height="614dp"
         android:orientation="horizontal">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="539dp"
-            android:textSize="16sp"/>
+            android:layout_height="match_parent"
+            android:textSize="16sp"
+            android:textColor="#fff"/>
     </LinearLayout>
 
     <Button
-        android:id="@+id/title_edit"
+        android:id="@+id/main_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"

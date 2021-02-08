@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TodoApp">
-        <activity android:name=".planned_page"></activity>
+        <activity android:name=".diy_page"></activity>
+        <activity android:name=".edit_type" />
+        <activity android:name=".planned_page" />
         <activity android:name=".task_page" />
         <activity android:name=".imp_page" />
         <activity

@@ -7,9 +7,9 @@ import android.widget.Toast;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
     public static final String CREATE_TASK = "create table TaskData(" +
-            "myDay BOOLEAN,"+
+            "Type text,"+
             "Important BOOLEAN," +
-            "Dated BOOLEAN," +
+            "Dated text," +
             "Task text)";
     private Context mContext;
     public MyDatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,int version){

@@ -62,6 +62,12 @@ public class TypeAdapter extends RecyclerView.Adapter<TypeAdapter.ViewHolder>{
                     intent.setClass(view.getContext(), task_page.class);
                     startActivity(view.getContext(),intent,null);
                 }
+                else {
+                    Intent intent=new Intent();
+                    intent.putExtra("diy",type.getName());
+                    intent.setClass(view.getContext(),diy_page.class);
+                    startActivity(view.getContext(),intent,null);
+                }
             }
         });
         holder.typeImage.setOnClickListener(new View.OnClickListener() {
@@ -87,6 +93,12 @@ public class TypeAdapter extends RecyclerView.Adapter<TypeAdapter.ViewHolder>{
                 else if(type.getName()=="Tasks"){
                     Intent intent=new Intent();
                     intent.setClass(view.getContext(), task_page.class);
+                    startActivity(view.getContext(),intent,null);
+                }
+                else {
+                    Intent intent=new Intent();
+                    intent.putExtra("diy",type.getName());
+                    intent.setClass(view.getContext(),diy_page.class);
                     startActivity(view.getContext(),intent,null);
                 }
             }
