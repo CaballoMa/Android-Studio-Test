@@ -1,6 +1,8 @@
 package com.example.todoapp.Model;
 
-public class Task {
+import java.io.Serializable;
+
+public class Task implements Serializable {
     private String text;
     public Boolean imp;
 

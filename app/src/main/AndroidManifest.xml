@@ -9,15 +9,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TodoApp">
-        <activity android:name=".View.diy_page"></activity>
+        <activity android:name=".View.TaskViewerActivity"></activity>
+        <activity android:name=".View.diy_page" />
         <activity android:name=".View.edit_type" />
         <activity
             android:name=".View.edit_msg"
             android:launchMode="singleTask" />
         <activity android:name=".View.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"     />
-                <category android:name="android.intent.category.LAUNCHER"   />
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>

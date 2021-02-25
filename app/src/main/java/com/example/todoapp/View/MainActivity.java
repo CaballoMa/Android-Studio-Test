@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.todoapp.Model.Task;
 import com.example.todoapp.Model.Type;
 import com.example.todoapp.R;
 import com.example.todoapp.ViewModel.TypeAdapter;
@@ -58,9 +59,12 @@ public class MainActivity extends AppCompatActivity {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent();
-                intent.setClass(MainActivity.this, edit_type.class);
-                startActivityForResult(intent,1);
+//                Intent intent=new Intent();
+//                intent.setClass(MainActivity.this, edit_type.class);
+//                startActivityForResult(intent,1);
+                Intent intent = new Intent(MainActivity.this, TaskViewerActivity.class);
+                intent.putExtra(TaskViewerActivity.KEY_TASK, new Task("Sample task", true));
+                startActivity(intent);
             }
         });
     }
